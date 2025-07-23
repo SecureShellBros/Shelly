@@ -18,7 +18,6 @@
 This system provides a flexible and web-friendly alternative for remote command execution, leveraging the widespread accessibility and capabilities of HTTP.
 
 ## Daily Reports
---------------
 ### Week 1 status:
 ### Week 2 status:
 ### Week 3 status:
