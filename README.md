@@ -22,3 +22,11 @@ This system provides a flexible and web-friendly alternative for remote command 
 ### Week 2 status:
 ### Week 3 status:
 
+
+
+## Developers
+
+- [Srisanth](https://github.com/srisanth15-dot)
+- [Akilan SS](https://github.com/AkilanSS)
+- [Parthivsurya KB ](https://github.com/Parthivsurya)
+- [Visruth Thayyil Vijind](https://github.com/beppvis)
