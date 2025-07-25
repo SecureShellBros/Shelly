@@ -13,7 +13,6 @@ import (
 )
 
 func main() {
-	// getting a message from https here we gooo
 	http.HandleFunc("/data", receiver.Receive)
 	log.Println("server => port 6969")
 	err := http.ListenAndServe(":6969", nil)
@@ -21,5 +20,8 @@ func main() {
 		log.Fatalf("server error: %v", err)
 	}
 
-	sender.Send()
+	// i defined a global variable in receiver.go and should be usable here too.
+	// outputPipe gets output. this output pipe can be used in sender.go cause i imported receiver module there.
+
+	// sender.Send()
 }
