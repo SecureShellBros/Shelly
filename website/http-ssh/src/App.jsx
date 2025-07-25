@@ -1,17 +1,16 @@
-import { cors }
 import './App.css'
 
 
 function App() {
-  function sendCommand() {
+  async function sendCommand() {
 
     let command = document.getElementById("commandInput").value;
     document.getElementById("commandInput").value = "";
-    let request = new Request(`localhost:6969/command?cmd=${command}`);// might need to changel the command
-    let out;
+    let request = new Request(`http://localhost:6969/data?msg=${command}`);// might need to changel the command
     let error;
-    fetch(request)
-      .then((response) => out = response)
+    let out;
+    await fetch(request)
+      .then((response) => response.text().then((cont) => { out = cont }))
       .catch((exception) => error = exception)
       ;
     document.getElementById("output").innerHTML = out;
