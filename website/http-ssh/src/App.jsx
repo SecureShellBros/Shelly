@@ -6,15 +6,17 @@ function App() {
 
     let command = document.getElementById("commandInput").value;
     document.getElementById("commandInput").value = "";
-    let request = new Request(`http://localhost:6969/data?msg=${command}`);// might need to changel the command
+    let request = new Request(`http://localhost:6969/data?msg=${command}`);
     let error;
     let out;
     await fetch(request)
-      .then((response) => response.text().then((cont) => { out = cont }))
+      .then((response) =>
+        response.text()
+          .then((cont) => { out = cont })
+          .catch((expception) => { error = expception }))
       .catch((exception) => error = exception)
       ;
     document.getElementById("output").innerHTML = out;
-    //WARN: might not work :(
   }
   return (
     <>
