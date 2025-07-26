@@ -2,8 +2,6 @@ package sender
 
 import (
 	"fmt"
-
-	"http-ssh.rfc/receiver"
 )
 
 func Send() {

@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"io"
 
+	//	"io"
 	//"io/ioutil"
 	"log"
 	"net/http"
@@ -40,9 +41,7 @@ func Receive(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "Command failed because of error: "+err.Error(), http.StatusInternalServerError)
 		return
 	}
-
-	outputPipe = output
-	cmdRunning = true
+	_ = output
 
 	// i want to call send( ) here to splice and send
 }
