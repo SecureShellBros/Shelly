@@ -8,11 +8,8 @@ import (
 	//"os/exec"
 
 	"http-ssh.rfc/receiver"
-	"http-ssh.rfc/sender"
+	// "http-ssh.rfc/sender"
 )
-
-
-
 
 func main() {
 	http.HandleFunc("/data", receiver.Receive)
