@@ -2,7 +2,6 @@ package receiver
 
 import (
 	"fmt"
-	"io"
 
 	//	"io"
 	//"io/ioutil"
@@ -20,8 +19,8 @@ func enableCORS(w http.ResponseWriter) {
 	w.Header().Set("Access-Control-Allow-Headers", "Content-Type")
 }
 func Receive(w http.ResponseWriter, r *http.Request) {
-	var outputPipe io.ReadCloser
-	var cmdRunning bool
+	// var outputPipe io.ReadCloser
+	// var cmdRunning bool
 
 	enableCORS(w)
 	msg := r.URL.Query().Get("msg")

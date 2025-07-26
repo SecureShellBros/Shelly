@@ -9,10 +9,7 @@ import (
 	//"os/exec"
 
 	"http-ssh.rfc/receiver"
-<<<<<<< HEAD
-=======
 	// "http-ssh.rfc/sender"
->>>>>>> 24c2e98 (hotfix might break)
 )
 
 func main() {
