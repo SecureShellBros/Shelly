@@ -1,5 +1,5 @@
 import './App.css'
-
+import XTermComponent from './XTermComponent'
 
 function App() {
   async function sendCommand() {
@@ -20,13 +20,13 @@ function App() {
   }
   return (
     <>
-      <h1>Http-ssh bros</h1>
-      <div className="card">
-        <textarea id="commandInput" onKeyUp={(key) => { if (key.code == "Enter") sendCommand() }}>
-        </textarea>
-      </div >
-      <div id="output">
+      <div className='terminalContainer' style={{display:'flex', flexDirection:'column'}}>
+        <h1>Peak Terminal</h1>
+          <main className='terminal'>
+            <XTermComponent/>
+          </main>
       </div>
+      
     </>
   )
 }

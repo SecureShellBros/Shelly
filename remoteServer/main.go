@@ -5,7 +5,8 @@ import (
 	//"io/ioutil"
 	"log"
 	"net/http"
-	"os/exec"
+
+	//"os/exec"
 
 	"http-ssh.rfc/receiver"
 	"http-ssh.rfc/sender"
