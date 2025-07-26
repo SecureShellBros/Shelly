@@ -24,7 +24,6 @@ const XTermComponent = () => {
             term.open(terminalRef.current);
             term.write('$sshbros$ ');
 
-
             let command = '';
             term.onData(e => {
                 if (e === '\r') {
@@ -44,6 +43,13 @@ const XTermComponent = () => {
                     term.write(e);
                 }
             });
+
+            window.addEventListener("resize", function(event){
+                console.log(this.window.height)
+                console.log(this.window.height)
+            })
+
+            
 
             return () => {
                 term.dispose();
