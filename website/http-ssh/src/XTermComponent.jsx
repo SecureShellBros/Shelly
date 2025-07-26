@@ -31,8 +31,18 @@ const XTermComponent = () => {
                     if (command) {
                         term.write(`The almighty terminal indeed agrees that ${command} \r\n`);
                     }
+
+                    const response = fetch(`http://localhost:6969/data?msg=${encodeURIComponent(command)}`, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify({ command: command })
+                    });
+    
                     term.write('$sshbros$ ');
                     command = '';
+                    
                 } else if (e === '\x7F') {
                     if (command.length > 0) {
                         term.write('\b \b');
@@ -42,14 +52,13 @@ const XTermComponent = () => {
                     command += e;
                     term.write(e);
                 }
+                
             });
 
             window.addEventListener("resize", function(event){
                 console.log(this.window.height)
                 console.log(this.window.height)
             })
-
-            
 
             return () => {
                 term.dispose();

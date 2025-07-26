@@ -1,7 +1,6 @@
 package receiver
 
 import (
-	"fmt"
 
 	//	"io"
 	//"io/ioutil"
@@ -24,7 +23,7 @@ func Receive(w http.ResponseWriter, r *http.Request) {
 
 	enableCORS(w)
 	msg := r.URL.Query().Get("msg")
-	fmt.Fprintf(w, "Received msg: %s\n", msg)
+	print(msg)
 	msg = strings.TrimSpace(msg)
 
 	var cmd *exec.Cmd
