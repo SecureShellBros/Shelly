@@ -23,13 +23,10 @@ function App() {
 
   return (
     <>
-      <div className='terminalContainer' style={{width:"100%", height:'100vh', position:'relative', maxWidth:'100vh'}}>
-        <h1>Peak Terminal</h1>
+    <h1>Peak Terminal</h1>
           <main className='terminal'>
             <XTermComponent/>
-          </main>
-      </div>
-      
+          </main>      
     </>
   )
 }
