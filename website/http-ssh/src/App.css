@@ -26,17 +26,17 @@ h1{
 
 /* The track (background) of the scrollbar */
 ::-webkit-scrollbar-track {
-    background: #81a1c1;
+    background: #2e3440;
     opacity: 0.5;
 
 }
 ::-webkit-scrollbar-thumb {
-    background: #587087;
+    background: #2e3440;
 }
 
 
 ::-webkit-scrollbar-thumb:hover {
-    background: #f1f1f12c;
+    background: #2e3440;
 }
 
 /* Corner where horizontal and vertical scrollbars meet */
