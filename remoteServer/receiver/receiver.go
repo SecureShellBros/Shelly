@@ -2,13 +2,12 @@ package receiver
 
 import (
 	"fmt"
-	//	"io"
-	//"io/ioutil"
+	"io"
 	"log"
 	"net/http"
-	"os/exec"
-	"runtime"
 	"strings"
+
+	"github.com/aymanbagabas/go-pty"
 )
 
 func enableCORS(w http.ResponseWriter) {
@@ -20,24 +19,36 @@ func enableCORS(w http.ResponseWriter) {
 
 func Receive(w http.ResponseWriter, r *http.Request) {
 	enableCORS(w)
-	msg := r.URL.Query().Get("msg")
-	fmt.Fprintf(w, "Received msg: %s\n", msg)
+
+	msg := r.URL.Query().Get("cmd")
+	fmt.Fprintf(w, "Received cmd: %s\n", msg)
 	msg = strings.TrimSpace(msg)
 
-	var cmd *exec.Cmd
-	if runtime.GOOS == "windows" {
-		cmd = exec.Command("cmd", "/C", msg)
-	} else {
-		cmd = exec.Command("sh", "-c", msg)
-	}
+	pty, err := pty.New()
 
-	output, err := cmd.StdoutPipe()
 	if err != nil {
-		log.Printf("command failed because of error: %v", err)
-		http.Error(w, "Command failed because of error: "+err.Error(), http.StatusInternalServerError)
-		return
+		log.Fatalf("Failed to open PTY: %s", err)
 	}
-	_ = output
+	defer pty.Close()
+	CommandArgs := strings.Split(msg, " ")
+	c := pty.Command(CommandArgs[0])
+	if len(CommandArgs) > 1 {
+		c = pty.Command(CommandArgs[0], CommandArgs[1])
+	}
+	if err := c.Start(); err != nil {
+		log.Fatalf("Failed to start: %s", err)
+	}
+	go io.Copy(w, pty)
+	if err := c.Wait(); err != nil {
+		panic(err)
+	}
 
+	//	if err != nil {
+	//		log.Printf("command failed because of error: %v", err)
+	//		http.Error(w, "Command failed because of error: "+err.Error(), http.StatusInternalServerError)
+	//		return
+	//	}
+	//	_ = output
+	//
 	// i want to call send( ) here to splice and send
 }

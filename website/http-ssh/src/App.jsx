@@ -9,7 +9,7 @@ function App() {
     let error;
 
     try {
-      const response = await fetch(`/data?msg=${encodeURIComponent(command)}`, {
+      const response = await fetch(`/data?cmd=${command}`, {
         mode: 'cors'
       });
       out = await response.text();
