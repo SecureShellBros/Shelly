@@ -1,13 +1,11 @@
 package receiver
 
 import (
-	"fmt"
+	"github.com/aymanbagabas/go-pty"
 	"io"
 	"log"
 	"net/http"
 	"strings"
-
-	"github.com/aymanbagabas/go-pty"
 )
 
 func enableCORS(w http.ResponseWriter) {
@@ -21,7 +19,7 @@ func Receive(w http.ResponseWriter, r *http.Request) {
 	enableCORS(w)
 
 	msg := r.URL.Query().Get("cmd")
-	fmt.Fprintf(w, "Received cmd: %s\n", msg)
+	log.Println("Recived Command : ", msg)
 	msg = strings.TrimSpace(msg)
 
 	pty, err := pty.New()
@@ -30,15 +28,21 @@ func Receive(w http.ResponseWriter, r *http.Request) {
 		log.Fatalf("Failed to open PTY: %s", err)
 	}
 	defer pty.Close()
+
 	CommandArgs := strings.Split(msg, " ")
 	c := pty.Command(CommandArgs[0])
+
 	if len(CommandArgs) > 1 {
 		c = pty.Command(CommandArgs[0], CommandArgs[1])
 	}
+
 	if err := c.Start(); err != nil {
 		log.Fatalf("Failed to start: %s", err)
 	}
+
 	go io.Copy(w, pty)
+
+	log.Println("Send message ", pty)
 	if err := c.Wait(); err != nil {
 		panic(err)
 	}

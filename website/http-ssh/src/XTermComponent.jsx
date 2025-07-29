@@ -6,6 +6,21 @@ import '@xterm/xterm/css/xterm.css';
 const XTermComponent = () => {
     const terminalRef = useRef(null);
     const termRef = useRef(null);
+    async function sendCommand(command) {
+        let out;
+        let error;
+        try {
+            const response = await fetch(`/data?cmd=${command}`, {
+                mode: 'cors'
+            });
+            out = await response.text();
+        } catch (err) {
+            error = err.toString();
+        }
+
+        return error ? `❌ Error: ${error}` : out;
+    }
+
 
     useEffect(() => {
         if (terminalRef.current && !termRef.current) {
@@ -29,7 +44,8 @@ const XTermComponent = () => {
                 if (e === '\r') {
                     term.write('\r\n');
                     if (command) {
-                        term.write(`The almighty terminal indeed agrees that ${command} \r\n`);
+                        console.log("Sending command : ", command);
+                        sendCommand(command).then((value) => { term.write(value); console.log(value) });
                     }
                     term.write('$sshbros$ ');
                     command = '';

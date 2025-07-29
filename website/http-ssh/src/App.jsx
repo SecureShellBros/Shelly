@@ -2,25 +2,6 @@ import './App.css'
 import XTermComponent from './XTermComponent'
 
 function App() {
-  async function sendCommand() {
-    const command = document.getElementById("commandInput").value;
-    document.getElementById("commandInput").value = "";
-
-    let out;
-    let error;
-
-    try {
-      const response = await fetch(`/data?cmd=${command}`, {
-        mode: 'cors'
-      });
-      out = await response.text();
-    } catch (err) {
-      error = err.toString();
-    }
-
-    document.getElementById("output").innerHTML = error ? `❌ Error: ${error}` : out;
-  }
-
   return (
     <>
       <div className='terminalContainer' style={{ width: "100%", height: '100vh', position: 'relative', maxWidth: '100vh' }}>
