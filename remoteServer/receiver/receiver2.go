@@ -23,6 +23,24 @@ func TerminalWS(w http.ResponseWriter, r *http.Request) {
 	}
 	defer conn.Close()
 
+	// this is the auth part.
+	// basically we're on the assumption that the first msg will be from login.
+	_, data, err := conn.ReadMessage()
+	if err != nil {
+		log.Println("password reading error:  ", err)
+		return
+	}
+
+	password := string(data)
+	if password != "donttaptheglass" {
+		log.Println("incorrect password")
+		conn.WriteMessage(websocket.TextMessage, []byte("incorrect password"))
+		return
+	}
+
+	log.Println("right password")
+	conn.WriteMessage(websocket.TextMessage, []byte("right password"))
+
 	var shell string
 	if runtime.GOOS == "windows" {
 		shell = "cmd.exe"

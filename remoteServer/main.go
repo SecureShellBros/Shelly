@@ -1,13 +1,14 @@
 package main
 
 import (
-	"http-ssh.rfc/receiver"
 	"log"
 	"net/http"
+
+	"http-ssh.rfc/receiver"
 )
 
 func main() {
-
+	// this file DOESNT HAVE websocket
 	http.HandleFunc("/data", receiver.Receive)
 	log.Println("server => port 6969")
 	err := http.ListenAndServe(":6969", nil)
