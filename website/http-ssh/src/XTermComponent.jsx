@@ -6,23 +6,12 @@ import '@xterm/xterm/css/xterm.css';
 const XTermComponent = () => {
     const terminalRef = useRef(null);
     const termRef = useRef(null);
-    async function sendCommand(command) {
-        let out;
-        let error;
-        try {
-            const response = await fetch(`/data?cmd=${command}`, {
-                mode: 'cors'
-            });
-            out = await response.text();
-        } catch (err) {
-            error = err.toString();
-        }
-
-        return error ? `❌ Error: ${error}` : out;
-    }
-
-
+    const ws = useRef(null);
     useEffect(() => {
+        if (!ws.current) ws.current = new WebSocket("ws://localhost:8080/data");
+        ws.current.onopen = () => {
+            console.log("Connected to Server");
+        }
         if (terminalRef.current && !termRef.current) {
             const term = new Terminal({
                 cursorBlink: true,
@@ -45,7 +34,10 @@ const XTermComponent = () => {
                     term.write('\r\n');
                     if (command) {
                         console.log("Sending command : ", command);
-                        sendCommand(command).then((value) => { term.write(value); console.log(value) });
+                        if (ws.current.readyState === WebSocket.OPEN)
+                            ws.current.send(data);
+                        else
+                            console.error("Websockets isnt in ready state");
                     }
                     term.write('$sshbros$ ');
                     command = '';
@@ -60,6 +52,11 @@ const XTermComponent = () => {
                 }
             });
 
+            ws.current.onmessage = (event) => {
+                term.write(event.data);
+                term.write('$sshbros$ ');
+            }
+
             window.addEventListener("resize", function(event) {
                 console.log(this.window.height)
                 console.log(this.window.height)
@@ -68,6 +65,7 @@ const XTermComponent = () => {
 
 
             return () => {
+                ws.current.close();
                 term.dispose();
                 termRef.current = null;
             };
