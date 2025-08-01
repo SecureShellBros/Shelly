@@ -40,3 +40,15 @@
 .read-the-docs {
   color: #888;
 }
+
+#output {
+  white-space: pre-wrap;
+  font-family: monospace;
+  background-color: #1a1a1a;
+  color: #ffffff;
+  padding: 1rem;
+  border: 1px solid #333;
+  min-height: 300px;
+  overflow-y: auto;
+  text-align: left;
+}

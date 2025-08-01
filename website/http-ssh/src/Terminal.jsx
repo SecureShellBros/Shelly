@@ -3,11 +3,7 @@ import { Terminal } from 'xterm';
 import 'xterm/css/xterm.css';
 
 function App() {
-  const termRef = useRef(null);
-  const ws = useRef(null);
-
-  useEffect(() => {
-    const term = new Terminal();
+  const termRef = useRef(null); const ws = useRef(null); useEffect(() => { const term = new Terminal();
     term.open(document.getElementById('terminal'));
     termRef.current = term;
 
@@ -32,7 +28,7 @@ function App() {
     });
 
     return () => {
-      ws.current?.close();
+      ws.current.close();
       term.dispose();
     };
   }, []);
