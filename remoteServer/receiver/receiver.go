@@ -1,58 +1,90 @@
 package receiver
 
 import (
-	"github.com/aymanbagabas/go-pty"
-	"io"
+	"context"
 	"log"
 	"net/http"
-	"strings"
+	"os"
+	"runtime"
+
+	"github.com/aymanbagabas/go-pty"
+	"github.com/gorilla/websocket"
 )
 
-func enableCORS(w http.ResponseWriter) {
-	// Allow requests from Vite (default port 5173)
-	w.Header().Set("Access-Control-Allow-Origin", "http://localhost:5173")
-	w.Header().Set("Access-Control-Allow-Methods", "GET, POST, OPTIONS")
-	w.Header().Set("Access-Control-Allow-Headers", "Content-Type")
+var upgrader = websocket.Upgrader{
+	CheckOrigin: func(r *http.Request) bool { return true },
 }
 
-func Receive(w http.ResponseWriter, r *http.Request) {
-	enableCORS(w)
-
-	msg := r.URL.Query().Get("cmd")
-	log.Println("Recived Command : ", msg)
-	msg = strings.TrimSpace(msg)
-
-	pty, err := pty.New()
-
+func TerminalWS(w http.ResponseWriter, r *http.Request) {
+	conn, err := upgrader.Upgrade(w, r, nil)
 	if err != nil {
-		log.Fatalf("Failed to open PTY: %s", err)
+		log.Println("WebSocket upgrade error:", err)
+		return
 	}
-	defer pty.Close()
+	defer conn.Close()
 
-	CommandArgs := strings.Split(msg, " ")
-	c := pty.Command(CommandArgs[0])
-
-	if len(CommandArgs) > 1 {
-		c = pty.Command(CommandArgs[0], CommandArgs[1])
-	}
-
-	if err := c.Start(); err != nil {
-		log.Fatalf("Failed to start: %s", err)
+	// this is the auth part.
+	// basically we're on the assumption that the first msg will be from login.
+	_, data, err := conn.ReadMessage()
+	if err != nil {
+		log.Println("password reading error:  ", err)
+		return
 	}
 
-	go io.Copy(w, pty)
-
-	log.Println("Send message ", pty)
-	if err := c.Wait(); err != nil {
-		panic(err)
+	password := string(data)
+	if password != "donttaptheglass" {
+		log.Println("incorrect password")
+		conn.WriteMessage(websocket.TextMessage, []byte("incorrect password"))
+		return
 	}
 
-	//	if err != nil {
-	//		log.Printf("command failed because of error: %v", err)
-	//		http.Error(w, "Command failed because of error: "+err.Error(), http.StatusInternalServerError)
-	//		return
-	//	}
-	//	_ = output
-	//
-	// i want to call send( ) here to splice and send
+	log.Println("right password")
+	conn.WriteMessage(websocket.TextMessage, []byte("right password"))
+
+	var shell string
+	if runtime.GOOS == "windows" {
+		shell = "cmd.exe"
+	} else {
+		shell = "bash"
+	}
+	pt, err := pty.New()
+	if err != nil {
+		log.Println("PTY creation failed:", err)
+		return
+	}
+	defer pt.Close()
+	cmd := pt.CommandContext(context.Background(), shell)
+	cmd.Env = os.Environ()
+	if err := cmd.Start(); err != nil {
+		log.Println("PTY command start failed:", err)
+		return
+	}
+	go func() {
+		buf := make([]byte, 1024)
+		for {
+			n, err := pt.Read(buf)
+			if err != nil {
+				log.Println("PTY read error:", err)
+				break
+			}
+			log.Printf("Sending to WebSocket: %q", string(buf[:n]))
+			if err := conn.WriteMessage(websocket.TextMessage, buf[:n]); err != nil {
+				log.Println("WebSocket write error:", err)
+				break
+			}
+		}
+	}()
+	for {
+		_, data, err := conn.ReadMessage()
+		if err != nil {
+			log.Println("WebSocket read error:", err)
+			break
+		}
+		log.Printf("Received from WebSocket: %q", string(data))
+		if _, err := pt.Write(data); err != nil {
+			log.Println("PTY write error:", err)
+			break
+		}
+	}
+	_ = cmd.Process.Kill()
 }
