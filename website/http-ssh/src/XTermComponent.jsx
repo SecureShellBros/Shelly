@@ -63,12 +63,19 @@ const XTermComponent = () => {
                         else
                             console.error("Websockets isnt in ready state");
                     }
+                    command = '';
 
                 } else if (e === '\x7F') {
                     if (command.length > 0) {
                         term.write('\b \b');
                         command = command.slice(0, -1);
                     }
+                } else if (commandRunning) {
+                    console.log("Sending keyStroke : ", e);
+                    if (ws.current.readyState === WebSocket.OPEN)
+                        ws.current.send(e)
+                    else
+                        console.error("Websocket isnt in ready state for sending keybinds")
                 } else {
                     command += e;
                     term.write(e);
@@ -76,8 +83,9 @@ const XTermComponent = () => {
             });
 
             ws.current.onmessage = (event) => {
-                console.log(event)
+                console.log("Recieved Data : ", event.data)
                 term.write(event.data);
+                console.log(event.data.search("$"));
             }
 
             window.addEventListener("resize", function(event) {
