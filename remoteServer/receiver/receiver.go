@@ -35,12 +35,10 @@ func TerminalWS(w http.ResponseWriter, r *http.Request) {
 	password := string(data)
 	if password != "donttaptheglass" {
 		log.Println("incorrect password")
-		conn.WriteMessage(websocket.TextMessage, []byte("incorrect password"))
 		return
 	}
 
-	log.Println("right password")
-	conn.WriteMessage(websocket.TextMessage, []byte("right password"))
+	log.Println("Authenticated User")
 
 	var shell string
 	if runtime.GOOS == "windows" {

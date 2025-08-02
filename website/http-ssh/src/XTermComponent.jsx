@@ -9,8 +9,9 @@ const XTermComponent = () => {
     const terminalRef = useRef(null);
     const termRef = useRef(null);
     const ws = useRef(null);
-    const [commandRunning, setcommandRunning] = useState(false);
     const fitAddonRef = useRef(null);
+    let commandRunning = false;
+    const outPattern = /\]+\$/;
 
     useEffect(() => {
         if (!ws.current) {
@@ -58,25 +59,26 @@ const XTermComponent = () => {
                     term.write('\r\n');
                     if (command) {
                         console.log("Sending command : ", command);
-                        if (ws.current.readyState === WebSocket.OPEN)
+                        if (ws.current.readyState === WebSocket.OPEN) {
                             ws.current.send(command + '\r');
+                        }
                         else
-                            console.error("Websockets isnt in ready state");
+                            console.error("Couldnt send commands websockets isnt in ready state");
                     }
                     command = '';
-
+                    commandRunning = true;
                 } else if (e === '\x7F') {
                     if (command.length > 0) {
                         term.write('\b \b');
                         command = command.slice(0, -1);
                     }
                 } else if (commandRunning) {
-                    console.log("Sending keyStroke : ", e);
-                    if (ws.current.readyState === WebSocket.OPEN)
-                        ws.current.send(e)
-                    else
-                        console.error("Websocket isnt in ready state for sending keybinds")
-                } else {
+                    if (ws.current.readyState === WebSocket.OPEN) {
+                        ws.current.send(e);
+                    }
+                    else console.error("Couldnt set keystrokes websocket isnt in ready state")
+                }
+                else {
                     command += e;
                     term.write(e);
                 }
@@ -85,7 +87,9 @@ const XTermComponent = () => {
             ws.current.onmessage = (event) => {
                 console.log("Recieved Data : ", event.data)
                 term.write(event.data);
-                console.log(event.data.search("$"));
+                if (outPattern.test(event.data)) {
+                    commandRunning = false;
+                }
             }
 
             window.addEventListener("resize", function(event) {
@@ -105,6 +109,12 @@ const XTermComponent = () => {
             };
 
             window.addEventListener("resize", handleResize);
+
+            ws.current.onclose = () => {
+                console.error("Websocket connection has been closed")
+            }
+
+
 
             return () => {
                 window.removeEventListener("resize", handleResize);
