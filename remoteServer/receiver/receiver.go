@@ -21,13 +21,14 @@ func TerminalWS(w http.ResponseWriter, r *http.Request) {
 		log.Println("WebSocket upgrade error:", err)
 		return
 	}
-	defer conn.Close()
 
+	defer conn.Close()
 	// this is the auth part.
 	// basically we're on the assumption that the first msg will be from login.
 	_, data, err := conn.ReadMessage()
+	log.Println(data)
 	if err != nil {
-		log.Println("password reading error:  ", err)
+		log.Fatalln("password reading error:  ", err)
 		return
 	}
 
@@ -80,11 +81,12 @@ func TerminalWS(w http.ResponseWriter, r *http.Request) {
 			log.Println("WebSocket read error:", err)
 			break
 		}
-		log.Printf("Received from WebSocket: %q", string(data))
+		log.Println("Received from WebSocket: ", string(data))
 		if _, err := pt.Write(data); err != nil {
 			log.Println("PTY write error:", err)
 			break
 		}
+
 	}
 	_ = cmd.Process.Kill()
 }
