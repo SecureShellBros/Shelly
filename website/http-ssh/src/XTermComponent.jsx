@@ -3,11 +3,15 @@ import { Terminal } from '@xterm/xterm';
 import { FitAddon } from '@xterm/addon-fit';
 import '@xterm/xterm/css/xterm.css';
 
+var shellHead = 'sshbros';
+
 const XTermComponent = () => {
     const terminalRef = useRef(null);
     const termRef = useRef(null);
     const ws = useRef(null);
     const [commandRunning, setcommandRunning] = useState(false);
+    const fitAddonRef = useRef(null);
+
     useEffect(() => {
         if (!ws.current) {
             ws.current = new WebSocket("ws://localhost:8080/data");
@@ -22,18 +26,32 @@ const XTermComponent = () => {
         if (terminalRef.current && !termRef.current) {
             const term = new Terminal({
                 cursorBlink: true,
-                fontSize: 14,
+                fontSize: 20,
                 fontFamily: 'monospace',
                 theme: {
                     background: '#2e3440',
                     foreground: '#e5e9f0',
                     cursor: '#81a1c1',
+                    shell: '#a2bd8b'
                 },
             });
 
+            const fitAddon = new FitAddon();
+            term.loadAddon(fitAddon);
+            fitAddonRef.current = fitAddon;
+
             termRef.current = term;
             term.open(terminalRef.current);
+            fitAddon.fit();
+            term.write(`\x1b[38;2;163;189;140m$${shellHead}$ \x1b[0m`);
 
+            term.onKey((e) => {
+                const { key, domEvent } = e;
+
+                if (domEvent.ctrlKey) {
+
+                }
+            })
             let command = '';
             term.onData(e => {
                 if (e === '\r') {
@@ -45,7 +63,7 @@ const XTermComponent = () => {
                         else
                             console.error("Websockets isnt in ready state");
                     }
-                    command = '';
+
                 } else if (e === '\x7F') {
                     if (command.length > 0) {
                         term.write('\b \b');
@@ -68,17 +86,39 @@ const XTermComponent = () => {
             })
 
 
+            // Fixed: Proper resize handler that actually resizes the terminal
+            const handleResize = () => {
+                if (fitAddonRef.current && termRef.current) {
+                    // Small timeout to ensure container has resized
+                    setTimeout(() => {
+                        fitAddonRef.current.fit();
+                    }, 10);
+                }
+            };
+
+            window.addEventListener("resize", handleResize);
 
             return () => {
+                window.removeEventListener("resize", handleResize);
                 term.dispose();
                 termRef.current = null;
+                fitAddonRef.current = null;
             };
         }
     }, []);
 
     if (ws.current)
         ws.current.close();
-    return <div ref={terminalRef} style={{ width: '100%', height: '100%', position: 'none', top: '0px', left: '0px', bottom: '0px', right: '0px' }} />;
+    return (
+        <div
+            ref={terminalRef}
+            style={{
+                width: '95%',
+                height: '100%',
+                margin: '0 auto'
+            }}
+        />
+    );
 };
 
 export default XTermComponent;
