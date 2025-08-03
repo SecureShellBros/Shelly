@@ -1,6 +1,6 @@
 import './App.css';
-import XTermComponent from './XTermComponent';
-import HackerLogin from './HackerLogin';
+import XTermComponent from './XTermComponent.jsx';
+import HackerLogin from './Hackerlogin.jsx';
 import MatrixBackground from './MatrixBackground';
 import { useState } from 'react';
 
