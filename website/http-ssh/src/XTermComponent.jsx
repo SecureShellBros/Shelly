@@ -11,7 +11,7 @@ const XTermComponent = () => {
     const ws = useRef(null);
     const fitAddonRef = useRef(null);
     let commandRunning = false;
-    const outPattern = /\]+\$/;
+    const outPattern = /\]+\#/;
 
     useEffect(() => {
         if (!ws.current) {
@@ -55,7 +55,8 @@ const XTermComponent = () => {
             })
             let command = '';
             term.onData(e => {
-                if (e === '\r') {
+                console.log(e)
+                if (e === '\r' && !commandRunning) {
                     term.write('\r\n');
                     if (command) {
                         console.log("Sending command : ", command);
@@ -67,7 +68,7 @@ const XTermComponent = () => {
                     }
                     command = '';
                     commandRunning = true;
-                } else if (e === '\x7F') {
+                } else if (e === '\x7F' && !commandRunning) {
                     if (command.length > 0) {
                         term.write('\b \b');
                         command = command.slice(0, -1);

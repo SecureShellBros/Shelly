@@ -4,14 +4,11 @@ body{
 
 #root{
   width: 100%;
-  margin-top: 0px;
 }
 
 .terminal{
     margin: 100px auto;
 }
-
-
 
 h1{
   text-align: center;
