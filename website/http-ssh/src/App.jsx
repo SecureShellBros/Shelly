@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import './App.css';
-import XTermComponent from './XTermComponent';
-import TerminalLogin from './TerminalLogin';
+import XTermComponent from './XTermComponent.jsx';
+import TerminalLogin from './Terminallogin.jsx';
 
 function App() {
   const [authenticated, setAuthenticated] = useState(false);
