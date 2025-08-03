@@ -1,18 +1,31 @@
-import './App.css'
-import XTermComponent from './XTermComponent'
+import React, { useState } from 'react';
+import './App.css';
+import XTermComponent from './XTermComponent';
+import TerminalLogin from './TerminalLogin';
 
 function App() {
-  return (
-    <>
-      <div className='terminalContainer' style={{ width: "100%", height: '100vh', position: 'relative' }}>
-        <h1>Peak Terminal</h1>
-        <main className='terminal'>
-          <XTermComponent />
-        </main>
-      </div>
+  const [authenticated, setAuthenticated] = useState(false);
 
-    </>
-  )
+  const handleLogin = (username, password) => {
+    if (username === 'admin' && password === 'admin@124') {
+      setAuthenticated(true);
+    } else {
+      alert('Incorrect username or password');
+    }
+  };
+
+  return (
+    <div className="appWrapper">
+      {!authenticated ? (
+        <TerminalLogin onLogin={handleLogin} />
+      ) : (
+        <div className="terminalContainer">
+          <h1 className="terminalTitle">Peak Terminal</h1>
+          <XTermComponent />
+        </div>
+      )}
+    </div>
+  );
 }
 
 export default App;
