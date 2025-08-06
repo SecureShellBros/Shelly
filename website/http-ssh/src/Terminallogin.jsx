@@ -15,6 +15,14 @@ function TerminalLogin({ onLogin }) {
       <div className="loginScreen">
         <h1 className="loginTitle">Peak Terminal</h1>
         <form className="loginForm" onSubmit={handleSubmit}>
+          <label htmlFor="loginIp">Login IP</label>
+          <input
+            id="loginIp"
+            type="text"
+            placeholder="enter IP address"
+            value={username}
+            required
+          />
           <label htmlFor="username">Username</label>
           <input
             id="username"
