@@ -12,11 +12,13 @@ const XTermComponent = () => {
     const fitAddonRef = useRef(null);
     let commandRunning = false;
     const outPattern = /\]+\#/;
+    const dirPattern = /\[[^\[\]]*\]/;
+
+    let ipaddr = sessionStorage.getItem('ip')
 
     useEffect(() => {
         if (!ws.current) {
-            ws.current = new WebSocket("ws://localhost:8080/data");
-
+            ws.current = new WebSocket(`ws://${ipaddr}/data`);
         }
         ws.current.onopen = () => {
             console.log("Connected to Server");
@@ -55,7 +57,7 @@ const XTermComponent = () => {
             })
             let command = '';
             term.onData(e => {
-                console.log(e)
+                // console.log(e)
                 if (e === '\r' && !commandRunning) {
                     term.write('\r\n');
                     if (command) {
@@ -88,28 +90,27 @@ const XTermComponent = () => {
             ws.current.onmessage = (event) => {
                 console.log("Recieved Data : ", event.data)
                 term.write(event.data);
+
+                let dir = event.data.match(dirPattern)
+                console.log(dir)
+
                 if (outPattern.test(event.data)) {
                     commandRunning = false;
                 }
             }
 
-            window.addEventListener("resize", function(event) {
-                console.log(this.window.height)
-                console.log(this.window.height)
-            })
 
+            // // Fixed: Proper resize handler that actually resizes the terminal
+            // const handleResize = () => {
+            //     if (fitAddonRef.current && termRef.current) {
+            //         // Small timeout to ensure container has resized
+            //         setTimeout(() => {
+            //             fitAddonRef.current.fit();
+            //         }, 10);
+            //     }
+            // };
 
-            // Fixed: Proper resize handler that actually resizes the terminal
-            const handleResize = () => {
-                if (fitAddonRef.current && termRef.current) {
-                    // Small timeout to ensure container has resized
-                    setTimeout(() => {
-                        fitAddonRef.current.fit();
-                    }, 10);
-                }
-            };
-
-            window.addEventListener("resize", handleResize);
+            // window.addEventListener("resize", handleResize);
 
             ws.current.onclose = () => {
                 console.error("Websocket connection has been closed")
@@ -118,7 +119,7 @@ const XTermComponent = () => {
 
 
             return () => {
-                window.removeEventListener("resize", handleResize);
+                // window.removeEventListener("resize", handleResize);
                 term.dispose();
                 termRef.current = null;
                 fitAddonRef.current = null;
@@ -134,9 +135,14 @@ const XTermComponent = () => {
             style={{
                 width: '95%',
                 height: '100%',
-                margin: '0 auto'
+                margin: '0 auto',
+                flex: '1',
+                height: '100%',
+                overflowY: 'hidden',
+                padding: '0.5rem'
             }}
         />
+        
     );
 };
 
