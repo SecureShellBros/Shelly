@@ -18,7 +18,7 @@ const XTermComponent = () => {
 
     useEffect(() => {
         if (!ws.current) {
-            ws.current = new WebSocket(`wss://${ipaddr}/data`);
+            ws.current = new WebSocket(`ws://${ipaddr}/data`);
         }
         ws.current.onopen = () => {
             console.log("Connected to Server");

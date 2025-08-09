@@ -1,3 +1,5 @@
+![icon](./website/http-ssh/public/icon.png)
+
 ### Key Components:
 - Server Application (Go or Python or any language):
     - Runs on the target remote machine.
