@@ -1,15 +1,15 @@
-import React, { useState } from 'react';
-import './TerminalLogin.css';
+import React, { useState } from "react";
+import "./TerminalLogin.css";
 
 function TerminalLogin({ onLogin }) {
-  const [username, setUsername] = useState('');
-  const [password, setPassword] = useState('');
-  const [ip, setIp] = useState('');
+  const [username, setUsername] = useState("");
+  const [password, setPassword] = useState("");
+  const [ip, setIp] = useState("");
 
   const handleSubmit = (e) => {
     e.preventDefault();
     onLogin(username, password);
-    sessionStorage.setItem('ip', ip);
+    sessionStorage.setItem("ip", ip);
   };
 
   return (
@@ -23,7 +23,7 @@ function TerminalLogin({ onLogin }) {
             type="text"
             placeholder="Enter IP address"
             value={ip}
-            onChange = {(e) => setIp(e.target.value)}
+            onChange={(e) => setIp(e.target.value)}
             required
           />
           <label htmlFor="username">Username</label>
