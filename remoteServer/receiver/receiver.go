@@ -44,7 +44,7 @@ func TerminalWS(w http.ResponseWriter, r *http.Request) {
 	if runtime.GOOS == "windows" {
 		shell = "cmd.exe"
 	} else {
-		shell = "bash"
+		shell = "zsh"
 	}
 	pt, err := pty.New()
 	if err != nil {

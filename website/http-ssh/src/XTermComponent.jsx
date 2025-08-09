@@ -1,9 +1,9 @@
-import React, { useEffect, useRef, useState } from 'react';
-import { Terminal } from '@xterm/xterm';
-import { FitAddon } from '@xterm/addon-fit';
-import '@xterm/xterm/css/xterm.css';
+import React, { useEffect, useRef, useState } from "react";
+import { Terminal } from "@xterm/xterm";
+import { FitAddon } from "@xterm/addon-fit";
+import "@xterm/xterm/css/xterm.css";
 
-var shellHead = 'sshbros';
+var shellHead = "sshbros";
 
 const XTermComponent = () => {
     const terminalRef = useRef(null);
@@ -14,7 +14,7 @@ const XTermComponent = () => {
     const outPattern = /\]+\#/;
     const dirPattern = /\[[^\[\]]*\]/;
 
-    let ipaddr = sessionStorage.getItem('ip')
+    let ipaddr = sessionStorage.getItem("ip");
 
     useEffect(() => {
         if (!ws.current) {
@@ -22,20 +22,21 @@ const XTermComponent = () => {
         }
         ws.current.onopen = () => {
             console.log("Connected to Server");
-            if (ws.current.readyState == WebSocket.OPEN)
+            if (ws.current.readyState == WebSocket.OPEN) {
                 ws.current.send("donttaptheglass");
-        }
+            }
+        };
 
         if (terminalRef.current && !termRef.current) {
             const term = new Terminal({
                 cursorBlink: true,
                 fontSize: 20,
-                fontFamily: 'monospace',
+                fontFamily: "monospace",
                 theme: {
-                    background: '#2e3440',
-                    foreground: '#e5e9f0',
-                    cursor: '#81a1c1',
-                    shell: '#a2bd8b'
+                    background: "#2e3440",
+                    foreground: "#e5e9f0",
+                    cursor: "#81a1c1",
+                    shell: "#a2bd8b",
                 },
             });
 
@@ -52,71 +53,71 @@ const XTermComponent = () => {
                 const { key, domEvent } = e;
 
                 if (domEvent.ctrlKey) {
-
                 }
-            })
-            let command = '';
-            term.onData(e => {
+            });
+            let command = "";
+            term.onData((e) => {
                 // console.log(e)
-                if (e === '\r' && !commandRunning) {
-                    term.write('\r\n');
+                if (e === "\r" && !commandRunning) {
+                    term.write("\r\n");
                     if (command) {
                         console.log("Sending command : ", command);
                         if (ws.current.readyState === WebSocket.OPEN) {
-                            ws.current.send(command + '\r');
+                            ws.current.send(command + "\r");
+                        } else {
+                            console.error(
+                                "Couldnt send commands websockets isnt in ready state",
+                            );
                         }
-                        else
-                            console.error("Couldnt send commands websockets isnt in ready state");
                     }
-                    command = '';
+                    command = "";
                     commandRunning = true;
-                } else if (e === '\x7F' && !commandRunning) {
+                } else if (e === "\x7F" && !commandRunning) {
                     if (command.length > 0) {
-                        term.write('\b \b');
+                        term.write("\b \b");
                         command = command.slice(0, -1);
                     }
                 } else if (commandRunning) {
                     if (ws.current.readyState === WebSocket.OPEN) {
                         ws.current.send(e);
+                    } else {
+                        console.error(
+                            "Couldnt set keystrokes websocket isnt in ready state",
+                        );
                     }
-                    else console.error("Couldnt set keystrokes websocket isnt in ready state")
-                }
-                else {
+                } else {
                     command += e;
                     term.write(e);
                 }
             });
 
             ws.current.onmessage = (event) => {
-                console.log("Recieved Data : ", event.data)
+                console.log("Recieved Data : ", event.data);
                 term.write(event.data);
 
-                let dir = event.data.match(dirPattern)
-                console.log(dir)
+                let dir = event.data.match(dirPattern);
+                console.log(dir);
 
                 if (outPattern.test(event.data)) {
                     commandRunning = false;
                 }
-            }
-
+            };
 
             // // Fixed: Proper resize handler that actually resizes the terminal
-            // const handleResize = () => {
-            //     if (fitAddonRef.current && termRef.current) {
-            //         // Small timeout to ensure container has resized
-            //         setTimeout(() => {
-            //             fitAddonRef.current.fit();
-            //         }, 10);
-            //     }
-            // };
+            const handleResize = () => {
+                if (fitAddonRef.current && termRef.current) {
+                    // Small timeout to ensure container has resized
+                    setTimeout(() => {
+                        fitAddonRef.current.fit();
+                    }, 10);
+                }
+            };
 
-            // window.addEventListener("resize", handleResize);
+            addEventListener("resize", handleResize);
 
             ws.current.onclose = () => {
-                console.error("Websocket connection has been closed")
-            }
-
-
+                console.error("Websocket connection has been closed");
+            };
 
             return () => {
                 // window.removeEventListener("resize", handleResize);
@@ -127,22 +128,21 @@ const XTermComponent = () => {
         }
     }, []);
 
-    if (ws.current)
+    if (ws.current) {
         ws.current.close();
+    }
     return (
         <div
             ref={terminalRef}
             style={{
-                width: '95%',
-                height: '100%',
-                margin: '0 auto',
-                flex: '1',
-                height: '100%',
-                overflowY: 'hidden',
-                padding: '0.5rem'
+                width: "95%",
+                margin: "0 auto",
+                flex: "1",
+                height: "100%",
+                overflowY: "hidden",
+                padding: "0.5rem",
             }}
         />
-        
     );
 };
 
