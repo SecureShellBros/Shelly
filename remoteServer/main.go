@@ -21,7 +21,7 @@ func getOutBoundIP() net.IP {
 func main() {
 	http.HandleFunc("/data", receiver.TerminalWS)
 	log.Printf("Outbound IP:%s:%s", getOutBoundIP().String(), "8080")
-	if err := http.ListenAndServe(":8080", nil); err != nil {
+	if err := http.ListenAndServeTLS(":8080", "server.crt", "server.key", nil); err != nil {
 		log.Fatalf("server error: %v", err)
 	}
 }
