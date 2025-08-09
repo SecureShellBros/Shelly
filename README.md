@@ -8,7 +8,7 @@ The connection uses WS for sending and recieving commands and output.
 
 # Pearly ⚪
 
-Runs on the remote machine, access the PTY for command execution, waits for messages from pearly.
+Runs on the remote machine, access the PTY for command execution, waits for messages from Shelly.
 
 
 ## Developers
