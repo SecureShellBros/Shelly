@@ -1,4 +1,4 @@
-![icon](./website/http-ssh/public/icon.png)
+![icon 100x100](./website/http-ssh/public/icon.png)
 
 ### Key Components:
 - Server Application (Go or Python or any language):
